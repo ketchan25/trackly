@@ -1,0 +1,16 @@
+.sidebar {
+    display: flex;
+    justify-content: flex-end;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 128;
+    width: 76px;
+    background: rgba(10, 10, 14, 0.88);
+}
+
+@media (max-width: 675px) {
+    nav ul {
+        display: none;
+    }
+}

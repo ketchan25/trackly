@@ -1,0 +1,92 @@
+nav {
+    z-index: 100;
+    padding: 0px 36px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: #f7f8fa;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: 0.3s;
+
+    .navbar-name-abbrev {
+        font-family: monospace;
+        font-size: 1.1rem;
+        letter-spacing: 0.15em;
+        color: rgb(255, 109, 58);
+        font-weight: 700;
+
+        span {
+            color: rgba(255, 255, 255, 0.22);
+            margin-left: 2px;
+        }
+    }
+
+    ul {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        
+        a {
+            font-family: monospace;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.45);
+            text-decoration: none;
+            transition: color 0.2s;
+            position: relative;
+            padding-bottom: 4px;
+            padding: 16px;
+
+            &:active {
+                color: rgb(255, 109, 58);
+                text-decoration: underline;
+                transition: color 0.4s;
+            }
+
+            &:hover {
+                color: rgb(255, 109, 58);
+                text-decoration: underline;
+                transition: color 0.4s;
+            }
+        }
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 6px 8px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.38);
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+
+        a {
+            font-family: monospace;
+            display: inline-flex;
+            text-decoration: none;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            gap: 2px;
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.38);
+        }
+    }
+}
+
+@media (max-width: 675px) {
+    nav ul {
+        display: none;
+    }
+}
