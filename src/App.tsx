@@ -6,7 +6,6 @@ import { Content } from './layout/Content'
 import { Navbar } from './layout/Navbar'
 
 function App() {
-
   return (
     <>
       <Main>

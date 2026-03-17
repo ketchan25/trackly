@@ -1,9 +1,11 @@
 import { DragDropProvider } from "@dnd-kit/react";
-import { Card } from "./Card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { move } from '@dnd-kit/helpers';
 import { Column } from "./Card/DragAndDrop/Column";
 import './kanban.scss';
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { firestoreDb } from "../../firebase/lib/firebase";
+import { updateTask } from "../../integrations/firebase/kanban";
 
 interface KanbanItems {
     [key: string]: {
@@ -14,21 +16,56 @@ interface KanbanItems {
 
 export const Kanban = () => {
     const [items, setItems] = useState<KanbanItems>({
-        "in-progress": [
-            { id: '1', title: 'Moving cards not working' },
-            { id: '2', title: 'Chat messaging not working' },
-            { id: '3', title: 'Issue 3' }
-        ],
-        "to-do": [
-            { id: '4', title: 'Issue 4' },
-            { id: '5', title: 'Issue 5' }
-        ],
+        "in-progress": [],
+        "to-do": [],
         "done": [],
     });
 
     const [columnOrder, setColumnOrder] = useState<string[]>(() => Object.keys(items));
 
-    console.log(columnOrder);
+    useEffect(() => {
+        const q = query(collection(firestoreDb, "boards", "chan", "tasks"), orderBy('position', 'asc'));
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.docChanges().forEach((change) => {
+                console.log(change.doc.data());
+                if (change.type === "added") {
+                    const changeData = change.doc.data();
+                    const newData = { id: change.doc.id, ...changeData };
+
+                    setItems((prevItems) => {
+                        if (prevItems[changeData.category].some(item => item.id === newData.id)) {
+                            return prevItems[changeData.category];
+                        }
+
+                        return { ...prevItems, [changeData.category]: [...prevItems[changeData.category], newData] };
+                    });
+                } else if (change.type === "modified") {
+                    const changeData = change.doc.data();
+                    const updatedData = { id: change.doc.id, ...changeData };
+
+                    setItems((prevItems) => {
+                        Object.keys(prevItems).forEach(item => {
+                            prevItems[item] = prevItems[item].filter(i => i.id !== updatedData.id);
+                        });
+
+                        return { ...prevItems, [changeData.category]: [...prevItems[changeData.category], updatedData] };
+                    });
+                }
+            });
+
+
+            if (querySnapshot.empty) {
+                console.log("No active boards found.");
+                return;
+            }
+        }, (error) => {
+            console.error("Error fetching boards: ", error);
+        });
+
+        // Cleanup the listener when the component unmounts
+        return () => unsubscribe();
+    }, [firestoreDb]);
 
     return (
         <DragDropProvider
@@ -42,6 +79,14 @@ export const Kanban = () => {
             onDragEnd={(event) => {
                 const { source } = event.operation;
 
+                const underPosition = items[source.group][source.index - 1]?.position ?? items[source.group][source.index]?.position
+                const overPosition = items[source.group][source.index]?.position ?? 1000;
+                const newPosition = (underPosition + overPosition) / 2;
+
+                updateTask(source.id, { category: source.group, position: newPosition });
+
+                console.log(items[source.group].sort((a, b) => a.position - b.position));
+
                 if (event.canceled || source?.type !== 'column') return;
 
                 setColumnOrder((columns) => move(columns, event));
@@ -49,11 +94,7 @@ export const Kanban = () => {
         >
             <div className="kanban-container">
                 {columnOrder.map((column: string, columnIndex: number) => (
-                    <Column key={column} id={column} index={columnIndex}>
-                        {(items[column]).map((item: { id: string; title: string }, index: number) => (
-                            <Card key={item.id} data={item} index={index} column={column} />
-                        ))}
-                    </Column>
+                    <Column key={column} id={column} index={columnIndex} cardData={items[column].sort((a, b) => a.position - b.position)} />
                 ))}
             </div>
         </DragDropProvider>
