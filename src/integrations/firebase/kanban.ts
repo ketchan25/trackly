@@ -4,14 +4,18 @@ import { firestoreDb } from "../../firebase/lib/firebase";
 import { nanoid } from "nanoid";
 
 interface TaskDatum {
-    title: string;
-    category: string;
-    position: number;
+    title?: string;
+    category?: string;
+    position?: number;
 }
 
 interface TaskData {
     category: string;
     data: TaskDatum;
+}
+
+interface UpdateTaskData {
+    [key: string]: unknown;
 }
 
 export const insertTask = async (data: TaskData): Promise<void> => {
@@ -26,7 +30,7 @@ export const insertTask = async (data: TaskData): Promise<void> => {
     }
 }
 
-export const updateTask = async (id: string, data: TaskData): Promise<void> => {
+export const updateTask = async (id: string, data: UpdateTaskData): Promise<void> => {
     try {
         const document = doc(firestoreDb, "boards", "chan", "tasks", id);
         const datum = await updateDoc(document, data)

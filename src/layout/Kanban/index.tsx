@@ -11,6 +11,8 @@ interface KanbanItems {
     [key: string]: {
         id: string;
         title: string;
+        category: string;
+        position: number;
     }[];
 }
 
@@ -79,22 +81,22 @@ export const Kanban = () => {
             onDragEnd={(event) => {
                 const { source } = event.operation;
 
-                const underPosition = items[source.group][source.index - 1]?.position ?? items[source.group][source.index]?.position
-                const overPosition = items[source.group][source.index]?.position ?? 1000;
-                const newPosition = (underPosition + overPosition) / 2;
+                const itemSource = (source as any);
 
-                updateTask(source.id, { category: source.group, position: newPosition });
+                const underPosition = items[itemSource.group][itemSource.index - 1]?.position ?? items[itemSource.group][itemSource.index]?.position
+                const overPosition = items[itemSource.group][itemSource.index]?.position ?? 1000;
+                const newPosition = (underPosition + overPosition) / (underPosition == overPosition ? 4 : 2);
 
-                console.log(items[source.group].sort((a, b) => a.position - b.position));
+                updateTask(itemSource.id, { category: itemSource.group, position: newPosition });
 
-                if (event.canceled || source?.type !== 'column') return;
+                if (event.canceled || (itemSource.type !== 'column')) return;
 
                 setColumnOrder((columns) => move(columns, event));
             }}
         >
             <div className="kanban-container">
                 {columnOrder.map((column: string, columnIndex: number) => (
-                    <Column key={column} id={column} index={columnIndex} cardData={items[column].sort((a, b) => a.position - b.position)} />
+                    <Column key={column} id={column} index={columnIndex} cardData={items[column].sort((a, b) => a?.position - b?.position)} />
                 ))}
             </div>
         </DragDropProvider>
