@@ -1,8 +1,10 @@
 @use "../styles/variables" as vars;
 
-body {
-    margin: 0%;
-    padding: 0%;
+html, body {
+    background-color: rgb(231,230,239);
+    margin: 0;
+    padding: 0;
+    overflow: auto;
 }
 
 *, *::before, *::after {

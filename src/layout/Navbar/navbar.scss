@@ -1,12 +1,26 @@
 nav {
     z-index: 100;
-    padding: 0px 36px;
-    height: 48px;
+    height: 32px;
     display: flex;
+    padding-left: 8px;
+    padding-right: 8px;
     align-items: center;
     justify-content: space-between;
     backdrop-filter: blur(20px);
-    background: rgb(249, 249, 249);
+    // background: rgb(231,230,239);
+    background: rgb(231,230,239);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     transition: 0.3s;
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        img {
+            height: 24px;
+            width: 24px;
+        }
+    }
+    
 }

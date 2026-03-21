@@ -1,0 +1,151 @@
+@use "../../styles/variables" as vars;
+
+.preview-task {
+    font-family: vars.$font;
+    position: absolute;
+    right: 20px;
+    margin-top: 16px;
+    z-index: 100;
+    width: 50%;
+    height: calc(100dvh - 100px);
+    background-color: rgb(252, 252, 252);
+    border-radius: 10px;
+    box-shadow:
+        inset 0px 0px 1px rgba(0, 0, 0, 0.4),
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
+
+    .preview-task-header {
+        position: sticky; /* Makes the header "sticky" at the defined position */
+        top: 0;
+        z-index: 10;   
+        display: flex;
+        width: 100%;
+        padding: 12px;
+        border-bottom: 1px solid rgb(225, 224, 236);
+        background-color: rgb(252,252,252);
+
+        .header-left {
+            flex-grow: 1;
+        }
+
+        .header-right {
+            flex-shrink: 0;
+            justify-self: end;
+        }
+
+        .button-close {
+            right: 4%;
+            display: flex;
+            gap: 8px;
+            padding: 12px 12px;
+            height: 32px;
+            width: 32px;
+            align-items: center;
+            justify-content: right;
+
+            padding: 8px 12px;
+            color: rgb(131, 131, 131);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            width: 100%;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+            transform: scale(1);
+
+            &:hover {
+                box-shadow:
+                    inset 0px 0px 1px rgba(0, 0, 0, 0.4),
+                    0 0 0 calc(1px / var(--scale-x, 1)) rgba(63, 63, 68, 0.2),
+                    0px 1px calc(5px / var(--scale-x, 1)) 0 rgba(34, 33, 81, 0.2);
+            }
+        }
+    }
+
+    .preview-task-content-container {
+        padding: 32px;
+        max-height: 100dvh;
+
+        .title {
+            font-family: vars.$font;
+            font-weight: 600;
+        }
+
+        .attachment-container {
+            display: grid;
+            width: 100%;
+            gap: 16px;
+            border-radius: 16px;
+
+            grid-template-columns: repeat(auto-fill, minmax(344px, 1fr));
+            grid-auto-rows: 244px; 
+            justify-content: center;
+            padding-bottom: 32px;
+
+            .attachment-wrapper {
+                width: 100%;
+                height: 100%;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow:
+                        inset 0px 0px 1px rgba(0, 0, 0, 0.4),
+                        0 4px 6px rgba(0, 0, 0, 0.1),
+                        0 1px 3px rgba(0, 0, 0, 0.08);
+
+                .attachments {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: center;
+                    display: block;
+                    
+                    
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1920px) {
+    .preview-task {
+        .attachments {
+            object-fit: cover;
+            object-position: center;
+            border-radius: 16px;
+            box-shadow:
+                inset 0px 0px 1px rgba(0, 0, 0, 0.4),
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+    }
+}
+
+@media (max-width: 1440px) {
+    .preview-task {
+        width: 100%;
+        height: calc(100dvh);
+        margin-top: 0px;
+        right: 0px;
+        
+        .attachments {
+            object-fit: cover;
+            object-position: center;
+            border-radius: 16px;
+            box-shadow:
+                inset 0px 0px 1px rgba(0, 0, 0, 0.4),
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .preview-task-content-container {
+            .attachment-container {
+                grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
+                grid-auto-rows: 108px; 
+            }
+        }
+    }
+}

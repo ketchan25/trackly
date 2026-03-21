@@ -6,6 +6,7 @@ import './kanban.scss';
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { firestoreDb } from "../../firebase/lib/firebase";
 import { updateTask } from "../../integrations/firebase/kanban";
+import { PreviewTask } from "../PreviewTask";
 
 interface KanbanItems {
     [key: string]: {
@@ -18,8 +19,8 @@ interface KanbanItems {
 
 export const Kanban = () => {
     const [items, setItems] = useState<KanbanItems>({
-        "in-progress": [],
         "to-do": [],
+        "in-progress": [],
         "done": [],
     });
 
@@ -30,7 +31,6 @@ export const Kanban = () => {
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             querySnapshot.docChanges().forEach((change) => {
-                console.log(change.doc.data());
                 if (change.type === "added") {
                     const changeData = change.doc.data();
                     const newData = { id: change.doc.id, ...changeData };
@@ -70,35 +70,39 @@ export const Kanban = () => {
     }, [firestoreDb]);
 
     return (
-        <DragDropProvider
-            onDragOver={(event) => {
-                const { source } = event.operation;
+        <>
+            <DragDropProvider
+                onDragOver={(event) => {
+                    const { source } = event.operation;
 
-                if (source?.type === 'column') return;
+                    if (source?.type === 'column') return;
 
-                setItems((items) => move(items, event));
-            }}
-            onDragEnd={(event) => {
-                const { source } = event.operation;
+                    setItems((items) => move(items, event));
+                }}
+                onDragEnd={(event) => {
+                    const { source } = event.operation;
 
-                const itemSource = (source as any);
+                    const itemSource = (source as any);
+                    
+                    if ((itemSource.type == 'column')) {
+                        setColumnOrder((columns) => move(columns, event));
+                        return;
+                    }
 
-                const underPosition = items[itemSource.group][itemSource.index - 1]?.position ?? items[itemSource.group][itemSource.index]?.position
-                const overPosition = items[itemSource.group][itemSource.index]?.position ?? 1000;
-                const newPosition = (underPosition + overPosition) / (underPosition == overPosition ? 4 : 2);
+                    const underPosition = items[itemSource.group][itemSource.index - 1]?.position ?? items[itemSource.group][itemSource.index]?.position
+                    const overPosition = items[itemSource.group][itemSource.index]?.position ?? 1000;
+                    const newPosition = (underPosition + overPosition) / (underPosition == overPosition ? 4 : 2);
 
-                updateTask(itemSource.id, { category: itemSource.group, position: newPosition });
-
-                if (event.canceled || (itemSource.type !== 'column')) return;
-
-                setColumnOrder((columns) => move(columns, event));
-            }}
-        >
-            <div className="kanban-container">
-                {columnOrder.map((column: string, columnIndex: number) => (
-                    <Column key={column} id={column} index={columnIndex} cardData={items[column].sort((a, b) => a?.position - b?.position)} />
-                ))}
-            </div>
-        </DragDropProvider>
+                    updateTask(itemSource.id, { category: itemSource.group, position: newPosition });
+                }}
+            >
+                <div className="kanban-container">
+                    {columnOrder.map((column: string, columnIndex: number) => (
+                        <Column key={column} id={column} index={columnIndex} cardData={items[column].sort((a, b) => a?.position - b?.position)} />
+                    ))}
+                </div>
+            </DragDropProvider>
+            <PreviewTask/>
+        </>
     );
 }

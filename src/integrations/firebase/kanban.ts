@@ -18,6 +18,11 @@ interface UpdateTaskData {
     [key: string]: unknown;
 }
 
+interface InsertTaskAttachmentData {
+    path: string,
+    timestamp: string,
+}
+
 export const insertTask = async (data: TaskData): Promise<void> => {
     try {
         const document = doc(firestoreDb, "boards", "chan", "tasks", nanoid());
@@ -25,8 +30,7 @@ export const insertTask = async (data: TaskData): Promise<void> => {
 
         return datum;
     } catch (e) {
-         console.log(e);
-        errorHandler(e, "firebase-insert-data")
+        errorHandler(e, "firebase-insert-task")
     }
 }
 
@@ -37,8 +41,22 @@ export const updateTask = async (id: string, data: UpdateTaskData): Promise<void
 
         return datum;
     } catch (e) {
-         console.log(e);
-        errorHandler(e, "firebase-update-data")
+        errorHandler(e, "firebase-update-task")
+    }
+}
+
+export const storeTaskAttachment = async (taskId: string | null, data: InsertTaskAttachmentData): Promise<void> => {
+    try {
+        if (! taskId) {
+            return;
+        }
+
+        const document = doc(firestoreDb, "boards", "chan", "tasks", taskId, "attachments", nanoid());
+        const datum = await setDoc(document, data)
+
+        return datum;
+    } catch (e) {
+        errorHandler(e, "firebase-insert-task-attachment")
     }
 }
 

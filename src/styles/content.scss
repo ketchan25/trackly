@@ -1,7 +1,18 @@
 @use "../styles/variables" as vars;
 
 .content-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto 1fr;
     width: 100%;
+    background-color: rgb(231,230,239);
+    border-radius: 20px;
+    padding: 8px;
+    min-height: calc(100dvh - 48px); 
+    gap: 8px;
+}
+
+@media (max-width: 1920px) {
+    // .content-container {
+    //     grid-template-columns: none;
+    // }
 }
